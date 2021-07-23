@@ -9,7 +9,7 @@ pub fn list_songs() -> io::Result<Vec<String>> {
         files.push(path);
     }
 
-    //removing the ./ in files
+    //cleaning the file names - removing path details
     let file_names: Vec<String>;
     file_names = files
         .iter()
