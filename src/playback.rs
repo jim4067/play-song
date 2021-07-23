@@ -1,8 +1,21 @@
 use crate::songs;
-use id3::{Tag, Version};
+use id3::{Tag};
 use rodio;
 use std::io;
 use std::{env, fs::File, io::BufReader};
+
+//you could use notify.rs to notify user which track is playing
+//visualizers
+
+//add a readme and instruction for use
+//maybe play in another thread -> think more about this
+
+//add an option to as the user whether to replay the song -> here use loop and break once user says play-next
+
+//when playing all the songs just create a for loop that will play the songs one by one,
+//if next is pressed then you can run a continue/skip action, when stop is pressed you can do a
+//break and previous is just going behind by one index
+//handling the first and last el is the real challenge here
 
 //the dir we are going to read for the music files
 fn current_dir() -> io::Result<String> {
