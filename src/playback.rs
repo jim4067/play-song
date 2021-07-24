@@ -36,12 +36,23 @@ fn songs_info(dir: &String, song: &String) {
         println!("artist:  {}", artist);
     }
     if let Some(album) = tag.album() {
-        println!("album :  {}", album);
+        println!("album :  {}\n", album);
     }
     //duration does not work; FIX IT
     //can rodio be used for song duration
+}
 
-    println!();
+//function to print songs in the directory
+pub fn show_songs() {
+    let songs = songs::list_songs().unwrap();
+    let dir = current_dir().unwrap();
+
+    for (index, song) in songs.iter().enumerate() {
+        // let tag = Tag::read_from_path(format!("{}/{}", dir, song)).unwrap();
+        // println!("{}\n", tag.album().unwrap_or("no album found"));
+        println!("{}: {}\n", index, song);
+    }
+    println!("{} mp3 songs in directory -> {}\n", songs.len(), dir);
 }
 
 //sink has pause
@@ -58,9 +69,9 @@ pub fn play_fn() {
         "Playing {} songs in this dir {}\n",
         songs.len(),
         current_dir().unwrap()
-    ); //this was added just for fun
-       //add playback instruction above here
-       //to repeat use r, to quite or stop use q, prev -> p, next -> n
+    );
+    //add playback instruction above here
+    //to repeat use r, to quite or stop use q, prev -> p, next -> n
 
     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
     let sink = rodio::Sink::try_new(&handle).unwrap();
