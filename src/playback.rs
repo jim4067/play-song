@@ -48,8 +48,6 @@ pub fn show_songs() {
     let dir = current_dir().unwrap();
 
     for (index, song) in songs.iter().enumerate() {
-        // let tag = Tag::read_from_path(format!("{}/{}", dir, song)).unwrap();
-        // println!("{}\n", tag.album().unwrap_or("no album found"));
         println!("{}: {}\n", index, song);
     }
     println!("{} mp3 songs in directory -> {}\n", songs.len(), dir);
