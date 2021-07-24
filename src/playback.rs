@@ -69,8 +69,6 @@ pub fn play_fn() {
 
     for song in songs {
         songs_info(&dir, &song); //fn to print song metadata
-                                 // let start = Instant::now();
-                                 // println!("{}"); the above two were for timing
 
         let file = File::open(format!("{}/{}", dir, song)).unwrap();
         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
