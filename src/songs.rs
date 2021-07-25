@@ -15,7 +15,7 @@ impl Songs {
             let path = entry.path().to_owned();
             files.push(path);
         }
-        //cleaning the file names - removing path details
+        //cleaning the file names - removing path details else do not do anything
         let file_names: Vec<String>;
         file_names = files
             .iter()
@@ -25,13 +25,21 @@ impl Songs {
         let mut m4a_songs = Vec::new();
         for song in file_names {
             //other file formats can be added here too
-            let song: String = song[3..song.len() - 1].to_string();
-            if song.trim().ends_with(".mp3") {
-                mp3_songs.push(song);
-            } else if song.trim().ends_with(".m4a") {
-                m4a_songs.push(song);
+            if path_str.contains(".") {
+                let song: String = song[3..song.len() - 1].to_string();
+                if song.trim().ends_with(".mp3") {
+                    mp3_songs.push(song);
+                } else if song.trim().ends_with(".m4a") {
+                    m4a_songs.push(song);
+                }
+            } else {
+                let song: String =  song[1..song.len() - 1].to_string(); //here is where to change
+                if song.trim().ends_with(".mp3") {
+                    mp3_songs.push(song);
+                } else if song.trim().ends_with(".m4a") {
+                    m4a_songs.push(song);
+                }
             }
-            //Issue an error here if no mp3 files are found
         }
         Ok(Self {
             mp3_songs,
