@@ -69,9 +69,16 @@ pub fn play_fn() {
     if m4a_songs.is_empty() && mp3_songs.is_empty() {
         println!("No songs found in current directory, exiting...");
         process::exit(1);
+    } else if !mp3_songs.is_empty() && m4a_songs.is_empty() {
+        //if mp3 found and m4a not found
+        play_mp3(mp3_songs, dir);
+    } else if !m4a_songs.is_empty() && mp3_songs.is_empty() {
+        play_m4a(m4a_songs, dir);
     }
+}
 
-    //playing the mp3 songs first
+fn play_mp3(mp3_songs: Vec<String>, dir: String) {
+    // playing the mp3 songs
     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
     let sink = rodio::Sink::try_new(&handle).unwrap();
     for song in mp3_songs {
@@ -86,27 +93,29 @@ pub fn play_fn() {
 
         sink.sleep_until_end();
     }
+}
 
-    //playing m4a songs //very cpu intensize
-    for song in m4a_songs{
-        //info about songs here
-        // songs_info(&dir, &song); //fn to print song metadata
+fn play_m4a(m4a_songs: Vec<String>, dir: String) {
+    //playing m4a songs
+    //info about songs here
+    // songs_info(&dir, &song); //fn to print song metadata
 
+    let output_stream = rodio::OutputStream::try_default();
+    let (_stream, handle) = output_stream.expect("error creating output stream");
+    let sink = rodio::Sink::try_new(&handle).expect("error creating sink");
+
+    for song in m4a_songs {
         let file = File::open(format!("{}/{}", dir, song)).unwrap();
         let size = file.metadata().expect("error reading file metadata").len();
         let buf = BufReader::new(file);
-
         let decoder = redlux::Decoder::new_mpeg4(buf, size).expect("error creating m4a decoder");
-        let output_stream = rodio::OutputStream::try_default();
-        let (_stream, handle) = output_stream.expect("error creating output stream");
-        let sink = rodio::Sink::try_new(&handle).expect("error creating sink");
         sink.append(decoder);
-        sink.sleep_until_end()
+        sink.sleep_until_end();
     }
 }
 
 // //play from a certain directory
 // pub fn play_from(path: &str) {
-//     let path_str = Path::new(path);
-//     todo!()
+//     // let path_str = Path::new(path).to_str();
+//     let path_str = path;
 // }
