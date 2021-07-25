@@ -8,9 +8,9 @@ pub struct Songs {
 }
 
 impl Songs {
-    pub fn list_songs() -> io::Result<Songs> {
+    pub fn list_songs(path_str: &str) -> io::Result<Songs> {
         let mut files = Vec::new();
-        for entry in WalkDir::new(".").min_depth(1).max_depth(3) {
+        for entry in WalkDir::new(path_str).min_depth(1).max_depth(3) {
             let entry = entry.unwrap();
             let path = entry.path().to_owned();
             files.push(path);
@@ -43,11 +43,11 @@ impl Songs {
 //There are no songs in my working directory so the vector should be empty
 #[test]
 fn no_m4a_songs_in_working_dir() {
-    let m4a_songs = Songs::list_songs().unwrap().m4a_songs;
+    let m4a_songs = Songs::list_songs(".").unwrap().m4a_songs;
     assert_eq!(m4a_songs.is_empty(), true);
 }
 #[test]
 fn no_mp3_songs_in_working_dir() {
-    let mp3_songs = Songs::list_songs().unwrap().mp3_songs;
+    let mp3_songs = Songs::list_songs(".").unwrap().mp3_songs;
     assert_eq!(mp3_songs.is_empty(), true);
 }
