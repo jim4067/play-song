@@ -40,3 +40,14 @@ impl Songs {
     }
 }
 
+//There are no songs in my working directory so the vector should be empty
+#[test]
+fn no_m4a_songs_in_working_dir() {
+    let m4a_songs = Songs::list_songs().unwrap().m4a_songs;
+    assert_eq!(m4a_songs.is_empty(), true);
+}
+#[test]
+fn no_mp3_songs_in_working_dir() {
+    let mp3_songs = Songs::list_songs().unwrap().mp3_songs;
+    assert_eq!(mp3_songs.is_empty(), true);
+}
