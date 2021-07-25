@@ -1,5 +1,6 @@
 use crate::songs::Songs;
 use id3::Tag;
+use redlux::Decoder;
 use rodio;
 use std::io;
 use std::{env, fs::File, io::BufReader, path::Path, process};
@@ -27,7 +28,7 @@ fn current_dir() -> io::Result<String> {
     Ok(dir)
 }
 
-fn songs_info(dir: &String, song: &String) {
+fn mp3_songs_info(dir: &String, song: &String) {
     let tag = Tag::read_from_path(format!("{}/{}", dir, song)).unwrap();
     if let Some(title) = tag.title() {
         println!("title :  {}", title);
@@ -74,7 +75,7 @@ pub fn play_fn() {
     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
     let sink = rodio::Sink::try_new(&handle).unwrap();
     for song in mp3_songs {
-        songs_info(&dir, &song); //fn to print song metadata
+        mp3_songs_info(&dir, &song); //fn to print song metadata
 
         let file = File::open(format!("{}/{}", dir, song)).unwrap();
         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
@@ -85,8 +86,23 @@ pub fn play_fn() {
 
         sink.sleep_until_end();
     }
-    //playing m4a songs
-    todo!()
+
+    //playing m4a songs //very cpu intensize
+    for song in m4a_songs{
+        //info about songs here
+        // songs_info(&dir, &song); //fn to print song metadata
+
+        let file = File::open(format!("{}/{}", dir, song)).unwrap();
+        let size = file.metadata().expect("error reading file metadata").len();
+        let buf = BufReader::new(file);
+
+        let decoder = redlux::Decoder::new_mpeg4(buf, size).expect("error creating m4a decoder");
+        let output_stream = rodio::OutputStream::try_default();
+        let (_stream, handle) = output_stream.expect("error creating output stream");
+        let sink = rodio::Sink::try_new(&handle).expect("error creating sink");
+        sink.append(decoder);
+        sink.sleep_until_end()
+    }
 }
 
 // //play from a certain directory
