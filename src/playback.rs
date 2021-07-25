@@ -1,8 +1,8 @@
-use crate::songs;
+use crate::songs::Songs;
 use id3::Tag;
 use rodio;
 use std::io;
-use std::{env, fs::File, io::BufReader, process};
+use std::{env, fs::File, io::BufReader, path::Path, process};
 
 // find out if there is a way to pause using rodio - there is
 //find out if there is a way to flush the std::output after printing to it
@@ -43,49 +43,69 @@ fn songs_info(dir: &String, song: &String) {
 }
 
 //function to print songs in the directory
+// pub fn show_songs() {
+//     let songs = songs::list_songs().unwrap();
+//     let dir = current_dir().unwrap();
+
+//     for (index, song) in songs.iter().enumerate() {
+//         println!("{}: {}\n", index, song);
+//     }
+//     println!("{} mp3 songs in directory -> {}\n", songs.len(), dir);
+// }
 pub fn show_songs() {
-    let songs = songs::list_songs().unwrap();
+    let m4a_songs = Songs::list_songs().unwrap().m4a_songs;
+    let mp3_songs = Songs::list_songs().unwrap().mp3_songs;
     let dir = current_dir().unwrap();
 
-    for (index, song) in songs.iter().enumerate() {
+    println!("{} m4a songs in directory -> {}\n", m4a_songs.len(), dir);
+    for (index, song) in m4a_songs.iter().enumerate() {
         println!("{}: {}\n", index, song);
     }
-    println!("{} mp3 songs in directory -> {}\n", songs.len(), dir);
+    println!("{} mp3 songs in directory -> {}\n", mp3_songs.len(), dir);
+    for (index, song) in mp3_songs.iter().enumerate() {
+        println!("{}: {}\n", index, song);
+    }
 }
 
 //sink has pause
 //paying with these controls
-pub fn play_fn() {
-    let songs = songs::list_songs().unwrap();
+// pub fn play_fn() {
+//     let songs = songs::list_songs().unwrap();
 
-    if songs.is_empty() {
-        println!(" no mp3 songs found");
-        process::exit(1);
-    } //write a test for this
+//     if songs.is_empty() {
+//         println!(" no mp3 songs found");
+//         process::exit(1);
+//     } //write a test for this
 
-    println!(
-        "Playing {} songs in this dir {}\n",
-        songs.len(),
-        current_dir().unwrap()
-    );
-    //add playback instruction above here
-    //to repeat use r, to quite or stop use q, prev -> p, next -> n
+//     println!(
+//         "Playing {} songs in this dir {}\n",
+//         songs.len(),
+//         current_dir().unwrap()
+//     );
+//     //add playback instruction above here
+//     //to repeat use r, to quite or stop use q, prev -> p, next -> n
 
-    let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
-    let sink = rodio::Sink::try_new(&handle).unwrap();
+//     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
+//     let sink = rodio::Sink::try_new(&handle).unwrap();
 
-    let dir = current_dir().unwrap();
+//     let dir = current_dir().unwrap();
 
-    for song in songs {
-        songs_info(&dir, &song); //fn to print song metadata
+//     for song in songs {
+//         songs_info(&dir, &song); //fn to print song metadata
 
-        let file = File::open(format!("{}/{}", dir, song)).unwrap();
-        sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
+//         let file = File::open(format!("{}/{}", dir, song)).unwrap();
+//         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
 
-        // sink.pause();//they work
-        // std::thread::sleep(std::time::Duration::from_secs(30));
-        // sink.play();//they work
+//         // sink.pause();//they work
+//         // std::thread::sleep(std::time::Duration::from_secs(30));
+//         // sink.play();//they work
 
-        sink.sleep_until_end();
-    }
-}
+//         sink.sleep_until_end();
+//     }
+// }
+
+// //play from a certain directory
+// pub fn play_from(path: &str) {
+//     let path_str = Path::new(path);
+//     todo!()
+// }
