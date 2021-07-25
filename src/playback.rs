@@ -42,16 +42,6 @@ fn songs_info(dir: &String, song: &String) {
     //can rodio be used for song duration
 }
 
-//function to print songs in the directory
-// pub fn show_songs() {
-//     let songs = songs::list_songs().unwrap();
-//     let dir = current_dir().unwrap();
-
-//     for (index, song) in songs.iter().enumerate() {
-//         println!("{}: {}\n", index, song);
-//     }
-//     println!("{} mp3 songs in directory -> {}\n", songs.len(), dir);
-// }
 pub fn show_songs() {
     let m4a_songs = Songs::list_songs().unwrap().m4a_songs;
     let mp3_songs = Songs::list_songs().unwrap().mp3_songs;
@@ -69,40 +59,35 @@ pub fn show_songs() {
 
 //sink has pause
 //paying with these controls
-// pub fn play_fn() {
-//     let songs = songs::list_songs().unwrap();
+pub fn play_fn() {
+    let m4a_songs = Songs::list_songs().unwrap().m4a_songs;
+    let mp3_songs = Songs::list_songs().unwrap().mp3_songs;
+    let dir = current_dir().unwrap();
 
-//     if songs.is_empty() {
-//         println!(" no mp3 songs found");
-//         process::exit(1);
-//     } //write a test for this
+    //check whether there are any songs in
+    if m4a_songs.is_empty() && mp3_songs.is_empty() {
+        println!("No songs found in current directory, exiting...");
+        process::exit(1);
+    }
 
-//     println!(
-//         "Playing {} songs in this dir {}\n",
-//         songs.len(),
-//         current_dir().unwrap()
-//     );
-//     //add playback instruction above here
-//     //to repeat use r, to quite or stop use q, prev -> p, next -> n
+    //playing the mp3 songs first
+    let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
+    let sink = rodio::Sink::try_new(&handle).unwrap();
+    for song in mp3_songs {
+        songs_info(&dir, &song); //fn to print song metadata
 
-//     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
-//     let sink = rodio::Sink::try_new(&handle).unwrap();
+        let file = File::open(format!("{}/{}", dir, song)).unwrap();
+        sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
 
-//     let dir = current_dir().unwrap();
+        // sink.pause();//they work
+        // std::thread::sleep(std::time::Duration::from_secs(30));
+        // sink.play();//they work
 
-//     for song in songs {
-//         songs_info(&dir, &song); //fn to print song metadata
-
-//         let file = File::open(format!("{}/{}", dir, song)).unwrap();
-//         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
-
-//         // sink.pause();//they work
-//         // std::thread::sleep(std::time::Duration::from_secs(30));
-//         // sink.play();//they work
-
-//         sink.sleep_until_end();
-//     }
-// }
+        sink.sleep_until_end();
+    }
+    //playing m4a songs
+    todo!()
+}
 
 // //play from a certain directory
 // pub fn play_from(path: &str) {
