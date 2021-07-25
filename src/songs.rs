@@ -3,8 +3,8 @@ use walkdir::WalkDir;
 
 #[derive(Debug)]
 pub struct Songs {
-    mp3_songs: Vec<String>,
-    m4a_songs: Vec<String>,
+    pub mp3_songs: Vec<String>,
+    pub m4a_songs: Vec<String>,
 }
 
 impl Songs {
