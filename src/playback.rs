@@ -66,24 +66,6 @@ fn m4a_songs_info(dir: &String, song: &String) {
     }
 }
 
-// fn play_mp3(mp3_songs: Vec<String>, dir: String) {
-//     // playing the mp3 songs
-//     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
-//     let sink = rodio::Sink::try_new(&handle).unwrap();
-//     for song in mp3_songs {
-//         mp3_songs_info(&dir, &song); //fn to print song metadata
-
-//         let file = File::open(format!("{}/{}", dir, song)).unwrap();
-//         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
-
-//         // sink.pause();//they work
-//         // std::thread::sleep(std::time::Duration::from_secs(30));
-//         // sink.play();//they work
-
-//         sink.sleep_until_end();
-//     }
-// }
-
 fn play_mp3(mp3_songs: Vec<String>, dir: String) {
     // playing the mp3 songs
     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
@@ -93,7 +75,6 @@ fn play_mp3(mp3_songs: Vec<String>, dir: String) {
 
         //check whether your are playing from current directory or user specified directory
         let file;
-
         if dir.contains(".") {
             file = File::open(format!("{}/{}", dir, song)).unwrap();
         } else {
@@ -120,7 +101,12 @@ fn play_m4a(m4a_songs: Vec<String>, dir: String) {
     for song in m4a_songs {
         m4a_songs_info(&dir, &song);
 
-        let file = File::open(format!("{}/{}", dir, song)).unwrap();
+        let file;
+        if dir.contains(".") {
+            file = File::open(format!("{}/{}", dir, song)).unwrap();
+        } else {
+            file = File::open(song).expect("error opening m4a file from specified path");
+        }
         let size = file.metadata().expect("error reading file metadata").len();
         let buf = BufReader::new(file);
         let decoder = Decoder::new_mpeg4(buf, size).expect("error creating m4a decoder");
@@ -165,33 +151,10 @@ pub fn play_from(path_str: &str) {
         //if mp3 found and m4a not found
         play_mp3(mp3_songs, dir);
     } else if !m4a_songs.is_empty() && mp3_songs.is_empty() {
-        m4a_playing_from(m4a_songs);
+        play_m4a(m4a_songs, dir);
     } //else {
       //     //very cpu intensive
       //     play_m4a(m4a_songs, dir.clone());
       //     play_mp3(mp3_songs, dir);
       // }
-}
-
-fn m4a_playing_from(songs: Vec<String>) {
-    let dir = "".to_string(); //
-
-    for song in songs {
-        m4a_songs_info(&dir, &song);
-        let file = File::open(song).expect("Error opening the file");
-        let size = file.metadata().expect("error reading metadata").len();
-        let buf = BufReader::new(file);
-
-        let decoder = redlux::Decoder::new_mpeg4(buf, size).expect("Error creating m4a decoder");
-        let output_stream = rodio::OutputStream::try_default();
-        let (_stream, handle) = output_stream.expect("error creating output stream");
-        let sink = rodio::Sink::try_new(&handle).expect("error creating sink");
-
-        sink.append(decoder);
-        sink.sleep_until_end();
-    }
-}
-
-fn mp3_playing_from(songs: Vec<String>) {
-    let dir = "".to_string(); //
 }
