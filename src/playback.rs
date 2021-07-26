@@ -66,6 +66,24 @@ fn m4a_songs_info(dir: &String, song: &String) {
     }
 }
 
+// fn play_mp3(mp3_songs: Vec<String>, dir: String) {
+//     // playing the mp3 songs
+//     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
+//     let sink = rodio::Sink::try_new(&handle).unwrap();
+//     for song in mp3_songs {
+//         mp3_songs_info(&dir, &song); //fn to print song metadata
+
+//         let file = File::open(format!("{}/{}", dir, song)).unwrap();
+//         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
+
+//         // sink.pause();//they work
+//         // std::thread::sleep(std::time::Duration::from_secs(30));
+//         // sink.play();//they work
+
+//         sink.sleep_until_end();
+//     }
+// }
+
 fn play_mp3(mp3_songs: Vec<String>, dir: String) {
     // playing the mp3 songs
     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
@@ -73,7 +91,14 @@ fn play_mp3(mp3_songs: Vec<String>, dir: String) {
     for song in mp3_songs {
         mp3_songs_info(&dir, &song); //fn to print song metadata
 
-        let file = File::open(format!("{}/{}", dir, song)).unwrap();
+        //check whether your are playing from current directory or user specified directory
+        let file;
+
+        if dir.contains(".") {
+            file = File::open(format!("{}/{}", dir, song)).unwrap();
+        } else {
+            file = File::open(song).expect("error opening file");
+        }
         sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
 
         // sink.pause();//they work
@@ -131,13 +156,14 @@ pub fn play_from(path_str: &str) {
     let mp3_songs = Songs::list_songs(path_str).unwrap().mp3_songs;
     let m4a_songs = Songs::list_songs(path_str).unwrap().m4a_songs;
     // let path = path_str.to_string();
+    let dir = "".to_string();
 
     if m4a_songs.is_empty() && mp3_songs.is_empty() {
         println!("No songs found in current directory, exiting...");
         process::exit(1);
-    // } else if !mp3_songs.is_empty() && m4a_songs.is_empty() {
-    //     //if mp3 found and m4a not found
-    //     play_mp3(mp3_songs, dir);
+    } else if !mp3_songs.is_empty() && m4a_songs.is_empty() {
+        //if mp3 found and m4a not found
+        play_mp3(mp3_songs, dir);
     } else if !m4a_songs.is_empty() && mp3_songs.is_empty() {
         m4a_playing_from(m4a_songs);
     } //else {
@@ -164,4 +190,8 @@ fn m4a_playing_from(songs: Vec<String>) {
         sink.append(decoder);
         sink.sleep_until_end();
     }
+}
+
+fn mp3_playing_from(songs: Vec<String>) {
+    let dir = "".to_string(); //
 }
