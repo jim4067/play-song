@@ -6,16 +6,6 @@ use rodio;
 use std::io;
 use std::{env, fs::File, io::BufReader, process};
 
-// find out if there is a way to pause using rodio - there is
-//find out if there is a way to flush the std::output after printing to it
-// and if there is a way to see duration using it
-// how to read from std::in in rust when a program is running eg like creating a TUI
-
-//add an option to as the user whether to replay the song -> here use loop and break once user says play-next
-//if next is pressed then you can run a continue/skip action, when stop is pressed you can do a
-//break and previous is just going behind by one index. to prevent out of bounds errors check where you are
-//i.e if the index is not below the len and above it also
-
 //the dir we are going to read for the music files
 fn current_dir() -> io::Result<String> {
     let dir = env::current_dir().unwrap().to_str().unwrap().to_string();
@@ -48,8 +38,6 @@ fn mp3_songs_info(dir: &String, song: &String) {
     if let Some(album) = tag.album() {
         println!("album :  {}\n", album);
     }
-    //duration does not work; FIX IT
-    //can rodio be used for song duration
 }
 
 fn m4a_songs_info(dir: &String, song: &String) {
@@ -67,9 +55,9 @@ fn m4a_songs_info(dir: &String, song: &String) {
 }
 
 fn play_mp3(mp3_songs: Vec<String>, dir: String) {
-    // playing the mp3 songs
     let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
     let sink = rodio::Sink::try_new(&handle).unwrap();
+
     for song in mp3_songs {
         mp3_songs_info(&dir, &song); //fn to print song metadata
 
@@ -80,19 +68,14 @@ fn play_mp3(mp3_songs: Vec<String>, dir: String) {
         } else {
             file = File::open(song).expect("error opening file");
         }
-        sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
 
-        // sink.pause();//they work
-        // std::thread::sleep(std::time::Duration::from_secs(30));
-        // sink.play();//they work
+        sink.append(rodio::Decoder::new(BufReader::new(file)).unwrap());
 
         sink.sleep_until_end();
     }
 }
 
 fn play_m4a(m4a_songs: Vec<String>, dir: String) {
-    //playing m4a songs
-    //info about songs here
 
     let output_stream = rodio::OutputStream::try_default();
     let (_stream, handle) = output_stream.expect("error creating output stream");
@@ -107,6 +90,7 @@ fn play_m4a(m4a_songs: Vec<String>, dir: String) {
         } else {
             file = File::open(song).expect("error opening m4a file from specified path");
         }
+        
         let size = file.metadata().expect("error reading file metadata").len();
         let buf = BufReader::new(file);
         let decoder = Decoder::new_mpeg4(buf, size).expect("error creating m4a decoder");
@@ -141,7 +125,6 @@ pub fn play_fn() {
 pub fn play_from(path_str: &str) {
     let mp3_songs = Songs::list_songs(path_str).unwrap().mp3_songs;
     let m4a_songs = Songs::list_songs(path_str).unwrap().m4a_songs;
-    // let path = path_str.to_string();
     let dir = "".to_string();
 
     if m4a_songs.is_empty() && mp3_songs.is_empty() {
