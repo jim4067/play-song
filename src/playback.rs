@@ -90,6 +90,7 @@ fn play_m4a(m4a_songs: Vec<String>, dir: String) {
         } else {
             file = File::open(song).expect("error opening m4a file from specified path");
         }
+        
         let size = file.metadata().expect("error reading file metadata").len();
         let buf = BufReader::new(file);
         let decoder = Decoder::new_mpeg4(buf, size).expect("error creating m4a decoder");
