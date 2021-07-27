@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::songs::Songs;
 use id3::Tag as mp3_tag;
 use mp4ameta::Tag as m4a_tag;
@@ -76,7 +77,6 @@ fn play_mp3(mp3_songs: Vec<String>, dir: String) {
 }
 
 fn play_m4a(m4a_songs: Vec<String>, dir: String) {
-
     let output_stream = rodio::OutputStream::try_default();
     let (_stream, handle) = output_stream.expect("error creating output stream");
     let sink = rodio::Sink::try_new(&handle).expect("error creating sink");
@@ -90,7 +90,6 @@ fn play_m4a(m4a_songs: Vec<String>, dir: String) {
         } else {
             file = File::open(song).expect("error opening m4a file from specified path");
         }
-        
         let size = file.metadata().expect("error reading file metadata").len();
         let buf = BufReader::new(file);
         let decoder = Decoder::new_mpeg4(buf, size).expect("error creating m4a decoder");
