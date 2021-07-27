@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::playback;
 use clap::{App, Arg};
 use std::error::Error;
