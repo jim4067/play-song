@@ -32,8 +32,11 @@ I used local files on my computer
 - I'll learn how to write audio decoders for media file and learn how different audio file formats store media data.
 - I'll learn how to add playback controls to the player, use async rust features to prevent the blocking behaviour encountered when only working with one thread.  
 
+## Future Improvements
+- Instead of reading file extensions to determine the type of file, I could use the file metadata.
+- Use the rust native path type instead of a String for file paths.
 ## Project setup
 
-Download the binary package from the releases page.
+Download the compiled binary package from the [releases page](https://github.com/jim4067/play-song/releases/download/0.0.1/play-song). 
 
 Jimmy ©2021
